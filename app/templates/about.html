@@ -1,12 +1,16 @@
-<!-- app/templates/contacts.html -->
-
 {% extends "base.html" %}
-{% block title %}Контакты{% endblock %}
+
+{% block title %}About Us{% endblock %}
+
 {% block content %}
-<h1>Контакты</h1>
-<p>Свяжитесь с нами:</p>
-<address>
-    Email: example@example.com<br>
-    Телефон: +7 (123) 456-78-90
-</address>
+    <h1>About Us</h1>
+    <p>This is the about page of our website.</p>
+
+    <!-- Пример использования цикла -->
+    <h2>Our Team</h2>
+    <ul>
+        {% for member in team_members %}
+            <li>{{ member.name }} - {{ member.role }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

@@ -1,8 +1,11 @@
-<!-- app/templates/index.html -->
-
 {% extends "base.html" %}
-{% block title %}Главная{% endblock %}
+
+{% block title %}Home Page{% endblock %}
+
 {% block content %}
-<h1>Добро пожаловать на главную страницу!</h1>
-<p>Это домашняя страница Flask-приложения.</p>
+    <h1>Welcome to the Home Page!</h1>
+    <p>This is the home page of our website.</p>
+
+    <!-- Пример использования переменной -->
+    <p>{{ greeting }}</p>
 {% endblock %}
