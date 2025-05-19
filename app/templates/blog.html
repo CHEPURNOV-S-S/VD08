@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Blog{% endblock %}
+
+{% block content %}
+    <h1>Blog Posts</h1>
+    <p>Here are some of our latest blog posts:</p>
+
+    <!-- Пример использования цикла -->
+    <ul>
+        {% for post in blog_posts %}
+            <li><a href="#">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
