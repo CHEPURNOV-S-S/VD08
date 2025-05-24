@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Профиль пользователя
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Профиль пользователя</h1>
+
+        <!-- Отображение информации о пользователе -->
+        <div class="row">
+            <div class="col-md-4 position-relative" style="width: fit-content;">
+                 <!-- Фото пользователя -->
+                <div class="photo-container position-relative">
+                    <img src="{{ user_photo }}" alt="Фото пользователя" id="user-photo" class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
+
+                    <!-- Кнопка "Обновить фото" -->
+                    <a href="#" id="update-photo-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить фото">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                        </svg>
+                    </a>
+
+                    <!-- Скрытый input file -->
+                    <input type="file" id="photo-input" accept="image/*" style="display: none;" />
+                </div>
+
+            </div>
+            <div class="col-md-8">
+                <div class="user-info-container position-relative">
+
+                    <!-- Блок с отображаемой информацией -->
+                    <div id="user-info-display">
+                        <h2>{{ user_name }}</h2>
+                        <p><strong>Город:</strong> {{ user_city }}</p>
+                        <p><strong>Хобби:</strong> {{ user_hobby }}</p>
+                        <p><strong>Возраст:</strong> {{ user_age }}</p>
+
+                        <!-- Кнопка "Изменить данные" -->
+                        <a href="#" id="update-user-info-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить данные">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <!-- Скрытая форма для редактирования -->
+                    <form id="edit-user-form" class="mt-3" style="display: none;" action="{{ url_for('update_profile') }}" method="POST">
+
+                        <div class="mb-2">
+                            <label for="edit-name" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="edit-name" name="name" value="{{ user_name }}">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="edit-city" class="form-label">Город</label>
+                            <input type="text" class="form-control" id="edit-city" name="city" value="{{ user_city }}">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="edit-hobby" class="form-label">Хобби</label>
+                            <input type="text" class="form-control" id="edit-hobby" name="hobby" value="{{ user_hobby }}">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="edit-age" class="form-label">Возраст</label>
+                            <input type="number" class="form-control" id="edit-age" name="age" value="{{ user_age }}">
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-sm me-2">
+                            <i class="fas fa-save"></i> Сохранить
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm cancel-edit">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Подключение JavaScript для обработки AJAX -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const updateBtn = document.getElementById('update-photo-btn');
+            const photoInput = document.getElementById('photo-input');
+            const userPhoto = document.getElementById('user-photo');
+
+            // Открываем диалог выбора файла при клике на кнопку
+            updateBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                photoInput.click(); // Открыть диалог выбора файла
+            });
+
+            // Обработка выбора файла
+            photoInput.addEventListener('change', function () {
+                const file = this.files[0];
+
+                 console.log("Выбран файл:", file);
+
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        console.log("Файл прочитан, URL:", e.target.result);
+                        userPhoto.src = e.target.result;
+                    };
+
+                    reader.onerror = function (e) {
+                        console.error("Ошибка чтения файла", e);
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
+                    console.warn("Выбранный файл не является изображением");
+                }
+            });
+
+            const editBtn = document.getElementById('update-user-info-btn');
+            const form = document.getElementById('edit-user-form');
+            const displayBlock = document.getElementById('user-info-display');
+
+            // Кнопка "Отмена"
+            const cancelBtn = document.querySelector('.cancel-edit');
+
+            // === Режим просмотра ===
+            function viewMode() {
+                if (displayBlock) displayBlock.style.display = 'block';
+                if (form) form.style.display = 'none';
+            }
+
+            // === Режим редактирования ===
+            function editMode() {
+                if (displayBlock) displayBlock.style.display = 'none';
+                if (form) form.style.display = 'block';
+            }
+
+            // === Обработчики событий ===
+            if (editBtn) {
+                editBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    editMode();
+                });
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function () {
+                    viewMode();
+                });
+            }
+
+            if (form) {
+                form.addEventListener('submit', function () {
+                    setTimeout(() => {
+                        viewMode();
+                    }, 100); // Небольшая задержка для обновления текста
+                });
+            }
+        });
+
+    </script>
+{% endblock %}
