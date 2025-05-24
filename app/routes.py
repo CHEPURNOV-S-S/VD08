@@ -64,12 +64,14 @@ def register_routes(app):
         age = request.form.get("age")
 
         # Обновляем данные
+        print(f"{user_data}")
         user_data.update({
             "name": name,
             "city": city,
             "hobby": hobby,
             "age": int(age) if age.isdigit() else user_data["age"]
         })
+        print (f"{user_data}")
 
         return redirect(url_for("profile"))
 
@@ -86,6 +88,11 @@ def register_routes(app):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             photo_url = f"/static/uploads/{filename}"
+            print(f"{user_data}")
+            user_data.update({
+                "photo": photo_url,
+            })
+            print(f"{user_data}")
             return jsonify({'success': True, 'photo_url': photo_url})
 
         return jsonify({'success': False, 'message': 'Недопустимый формат файла'}), 400

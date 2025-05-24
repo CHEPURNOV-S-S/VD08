@@ -105,6 +105,29 @@
                     reader.onload = function (e) {
                         console.log("Файл прочитан, URL:", e.target.result);
                         userPhoto.src = e.target.result;
+
+                         // Теперь отправляем файл на сервер
+                        const formData = new FormData();
+                        formData.append('photo', file);
+
+                        fetch('/update_photo', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log("Фото успешно обновлено на сервере", data.photo_url);
+                                userPhoto.src = data.photo_url;
+                            } else {
+                                console.error("Ошибка обновления фото:", data.message);
+                                alert("Не удалось загрузить фото.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Ошибка сети:", error);
+                            alert("Произошла ошибка при загрузке фото.");
+                        });
                     };
 
                     reader.onerror = function (e) {
