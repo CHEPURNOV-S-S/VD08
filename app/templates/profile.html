@@ -29,47 +29,52 @@
             </div>
             <div class="col-md-8">
                 <div class="user-info-container position-relative">
-                    <h2>{{ user_name }}</h2>
-                    <p><strong>Город:</strong> {{ user_city }}</p>
-                    <p><strong>Хобби:</strong> {{ user_hobby }}</p>
-                    <p><strong>Возраст:</strong> {{ user_age }}</p>
+                    <!-- Форма для просмотра и редактирования -->
+                    <form id="profile-form" method="POST" action="{{ url_for('update_profile') }}" style="width: 100%;">
 
-                    <!-- Кнопка "Обновить фото" -->
-                    <a href="#" id="update-user-info-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить данные">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                        </svg>
-                    </a>
-
-                    <!-- Скрытая форма для редактирования -->
-                    <form id="edit-user-form" class="mt-3" style="display: none;" action="{{ url_for('update_profile') }}" method="POST">
-
+                         <!-- Имя -->
                         <div class="mb-2">
-                            <label for="edit-name" class="form-label">Имя</label>
-                            <input type="text" class="form-control" id="edit-name" name="name" value="{{ user_name }}">
+                            <label for="name" class="form-label">Имя</label>
+                            <div id="name-display" class="form-control-static">{{ user_name }}</div>
+                            <input type="text" class="form-control d-none" id="name-edit" name="name" value="{{ user_name }}">
                         </div>
 
+                        <!-- Город -->
                         <div class="mb-2">
-                            <label for="edit-city" class="form-label">Город</label>
-                            <input type="text" class="form-control" id="edit-city" name="city" value="{{ user_city }}">
+                            <label for="city" class="form-label">Город</label>
+                            <div id="city-display" class="form-control-static">{{ user_city }}</div>
+                            <input type="text" class="form-control d-none" id="city-edit" name="city" value="{{ user_city }}">
                         </div>
 
+                        <!-- Хобби -->
                         <div class="mb-2">
-                            <label for="edit-hobby" class="form-label">Хобби</label>
-                            <input type="text" class="form-control" id="edit-hobby" name="hobby" value="{{ user_hobby }}">
+                            <label for="hobby" class="form-label">Хобби</label>
+                            <div id="hobby-display" class="form-control-static">{{ user_hobby }}</div>
+                            <input type="text" class="form-control d-none" id="hobby-edit" name="hobby" value="{{ user_hobby }}">
                         </div>
 
+                         <!-- Возраст -->
                         <div class="mb-2">
-                            <label for="edit-age" class="form-label">Возраст</label>
-                            <input type="number" class="form-control" id="edit-age" name="age" value="{{ user_age }}">
+                            <label for="age" class="form-label">Возраст</label>
+                            <div id="age-display" class="form-control-static">{{ user_age }}</div>
+                            <input type="number" class="form-control d-none" id="age-edit" name="age" value="{{ user_age }}">
                         </div>
 
-                        <button type="submit" class="btn btn-success btn-sm me-2">
-                            <i class="fas fa-save"></i> Сохранить
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-sm cancel-edit">
-                            <i class="fas fa-times"></i> Отмена
-                        </button>
+                        <!-- Кнопка "Обновить фото" -->
+                        <a href="#" id="edit-profile-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить данные">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                            </svg>
+                        </a>
+                        <!-- Кнопки -->
+                        <div class="d-flex gap-2 d-none" id="form-buttons">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-save"></i> Сохранить
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" id="cancel-edit">
+                                <i class="fas fa-times"></i> Отмена
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -112,23 +117,63 @@
                     console.warn("Выбранный файл не является изображением");
                 }
             });
-        });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const editBtn = document.getElementById('update-user-info-btn');
-            const editForm = document.getElementById('edit-user-form');
+            console.log("Логика обработки редактирования полей профиля")
+            const editBtn = document.getElementById('edit-profile-btn');
 
+            const form = document.getElementById('profile-form');
+
+            // Элементы для переключения
+            const fields = {
+                name: { display: 'name-display', edit: 'name-edit' },
+                city: { display: 'city-display', edit: 'city-edit' },
+                hobby: { display: 'hobby-display', edit: 'hobby-edit' },
+                age: { display: 'age-display', edit: 'age-edit' }
+            };
+
+            const buttons = document.getElementById('form-buttons');
+            const staticElements = document.querySelectorAll('.form-control-static');
+            const inputElements = document.querySelectorAll('.form-control.d-none');
+
+            // Режим просмотра
+            function viewMode() {
+                for (const key in fields) {
+                    const displayEl = document.getElementById(fields[key].display);
+                    const inputEl = document.getElementById(fields[key].edit);
+                    displayEl.textContent = inputEl.value;
+                }
+
+                staticElements.forEach(el => el.classList.remove('d-none'));
+                inputElements.forEach(el => el.classList.add('d-none'));
+                editBtn.classList.remove('d-none');
+                buttons.classList.add('d-none');
+            }
+
+            // Режим редактирования
+            function editMode() {
+                staticElements.forEach(el => el.classList.add('d-none'));
+                inputElements.forEach(el => el.classList.remove('d-none'));
+                buttons.classList.remove('d-none');
+                editBtn.classList.add('d-none');
+            }
+
+            // Обработчик клика по карандашу
             editBtn.addEventListener('click', function (e) {
                 e.preventDefault();
-                editForm.style.display = 'block';
-                editBtn.innerHTML = '<i class="fas fa-save"></i>';
+                editMode();
             });
 
-            document.querySelector('.cancel-edit').addEventListener('click', function () {
-                editForm.style.display = 'none';
-                editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/></svg>';
+            // Обработчик отмены
+            document.getElementById('cancel-edit').addEventListener('click', function () {
+                viewMode();
+            });
+
+            // После отправки формы
+            form.addEventListener('submit', function () {
+                setTimeout(() => {
+                    viewMode();
+                }, 100); // Небольшая задержка, чтобы обновились значения
             });
         });
-
     </script>
 {% endblock %}
