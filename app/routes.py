@@ -56,23 +56,22 @@ def register_routes(app):
                                user_age=user_data['age'],
                                user_photo=user_data['photo'])
 
-    @app.route('/edit_profile', methods=['GET', 'POST'])
-    def edit_profile():
-        """Редактирование профиля пользователя"""
-        if request.method == 'POST':
-            # Обновляем данные пользователя
-            user_data['name'] = request.form.get('name')
-            user_data['city'] = request.form.get('city')
-            user_data['hobby'] = request.form.get('hobby')
-            user_data['age'] = request.form.get('age')
-            flash('Данные успешно обновлены!', 'success')
-            return redirect(url_for('profile'))
-        return render_template('profile.html',
-                               user_name=user_data['name'],
-                               user_city=user_data['city'],
-                               user_hobby=user_data['hobby'],
-                               user_age=user_data['age'],
-                               user_photo=user_data['photo'])
+    @app.route("/update-profile", methods=["POST"])
+    def update_profile():
+        name = request.form.get("name")
+        city = request.form.get("city")
+        hobby = request.form.get("hobby")
+        age = request.form.get("age")
+
+        # Обновляем данные
+        user_data.update({
+            "name": name,
+            "city": city,
+            "hobby": hobby,
+            "age": int(age) if age.isdigit() else user_data["age"]
+        })
+
+        return redirect(url_for("profile"))
 
     @app.route('/update_photo', methods=['POST'])
     def update_photo():

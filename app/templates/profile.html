@@ -10,103 +10,125 @@
 
         <!-- Отображение информации о пользователе -->
         <div class="row">
-            <div class="col-md-4">
-                <img src="{{ user_photo }}" alt="Фото пользователя" class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
-                <!-- Кнопка "Обновить фото" -->
-                <a href="#" id="update-photo-btn" class="btn btn-primary mb-3">
-                    <i class="fas fa-camera"></i> Обновить фото
-                </a>
+            <div class="col-md-4 position-relative" style="width: fit-content;">
+                 <!-- Фото пользователя -->
+                <div class="photo-container position-relative">
+                    <img src="{{ user_photo }}" alt="Фото пользователя" id="user-photo" class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
 
-                <!-- Форма загрузки фото (скрыта по умолчанию) -->
-                <div id="photo-form-container" class="mb-4 p-3 bg-light border rounded" style="display: none;">
-                    <form id="photo-form" enctype="multipart/form-data">
+                    <!-- Кнопка "Обновить фото" -->
+                    <a href="#" id="update-photo-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить фото">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                        </svg>
+                    </a>
+
+                    <!-- Скрытый input file -->
+                    <input type="file" id="photo-input" accept="image/*" style="display: none;" />
+                </div>
+
+            </div>
+            <div class="col-md-8">
+                <div class="user-info-container position-relative">
+                    <h2>{{ user_name }}</h2>
+                    <p><strong>Город:</strong> {{ user_city }}</p>
+                    <p><strong>Хобби:</strong> {{ user_hobby }}</p>
+                    <p><strong>Возраст:</strong> {{ user_age }}</p>
+
+                    <!-- Кнопка "Обновить фото" -->
+                    <a href="#" id="update-user-info-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить данные">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                        </svg>
+                    </a>
+
+                    <!-- Скрытая форма для редактирования -->
+                    <form id="edit-user-form" class="mt-3" style="display: none;" action="{{ url_for('update_profile') }}" method="POST">
+
                         <div class="mb-2">
-                            <label for="photo" class="form-label">Выберите новое фото:</label>
-                            <input type="file" class="form-control" name="photo" accept="image/*" required>
+                            <label for="edit-name" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="edit-name" name="name" value="{{ user_name }}">
                         </div>
+
+                        <div class="mb-2">
+                            <label for="edit-city" class="form-label">Город</label>
+                            <input type="text" class="form-control" id="edit-city" name="city" value="{{ user_city }}">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="edit-hobby" class="form-label">Хобби</label>
+                            <input type="text" class="form-control" id="edit-hobby" name="hobby" value="{{ user_hobby }}">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="edit-age" class="form-label">Возраст</label>
+                            <input type="number" class="form-control" id="edit-age" name="age" value="{{ user_age }}">
+                        </div>
+
                         <button type="submit" class="btn btn-success btn-sm me-2">
-                            <i class="fas fa-upload"></i> Загрузить
+                            <i class="fas fa-save"></i> Сохранить
                         </button>
-                        <button type="button" class="btn btn-secondary btn-sm cancel-upload">
+                        <button type="button" class="btn btn-secondary btn-sm cancel-edit">
                             <i class="fas fa-times"></i> Отмена
                         </button>
                     </form>
                 </div>
             </div>
-            <div class="col-md-8">
-                <h2>{{ user_name }}</h2>
-                <p><strong>Город:</strong> {{ user_city }}</p>
-                <p><strong>Хобби:</strong> {{ user_hobby }}</p>
-                <p><strong>Возраст:</strong> {{ user_age }}</p>
-                <a href="{{ url_for('edit_profile') }}" class="btn btn-secondary">
-                    <i class="fas fa-pencil-alt"></i> Редактировать
-                </a>
-            </div>
         </div>
-
-        <hr>
-
-        <!-- Форма редактирования профиля -->
-        <h3>Редактировать данные</h3>
-        <form method="POST" action="{{ url_for('edit_profile') }}">
-            <div class="form-group">
-                <label for="name">Имя:</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ user_name }}" required>
-            </div>
-            <div class="form-group">
-                <label for="city">Город:</label>
-                <input type="text" class="form-control" id="city" name="city" value="{{ user_city }}" required>
-            </div>
-            <div class="form-group">
-                <label for="hobby">Хобби:</label>
-                <input type="text" class="form-control" id="hobby" name="hobby" value="{{ user_hobby }}" required>
-            </div>
-            <div class="form-group">
-                <label for="age">Возраст:</label>
-                <input type="number" class="form-control" id="age" name="age" value="{{ user_age }}" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-        </form>
     </div>
 
      <!-- Подключение JavaScript для обработки AJAX -->
     <script>
-        // Показываем форму при клике на "Обновить фото"
-        document.getElementById('update-photo-btn').addEventListener('click', function(event) {
-            event.preventDefault(); // Предотвращаем переход по ссылке
-            document.getElementById('photo-form-container').style.display = 'block';
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const updateBtn = document.getElementById('update-photo-btn');
+            const photoInput = document.getElementById('photo-input');
+            const userPhoto = document.getElementById('user-photo');
 
-        // Скрываем форму при клике на "Отмена"
-        document.querySelector('.cancel-upload').addEventListener('click', function() {
-            document.getElementById('photo-form-container').style.display = 'none';
-        });
+            // Открываем диалог выбора файла при клике на кнопку
+            updateBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                photoInput.click(); // Открыть диалог выбора файла
+            });
 
-        // Обработка отправки формы (AJAX)
-        document.getElementById('photo-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Не перезагружаем страницу
+            // Обработка выбора файла
+            photoInput.addEventListener('change', function () {
+                const file = this.files[0];
 
-            const formData = new FormData(this);
+                 console.log("Выбран файл:", file);
 
-            fetch('{{ url_for("update_photo") }}', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Обновляем аватар пользователя
-                    document.querySelector('img[alt="Фото пользователя"]').src = data.photo_url;
-                    alert('✅ Фото успешно обновлено!');
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        console.log("Файл прочитан, URL:", e.target.result);
+                        userPhoto.src = e.target.result;
+                    };
+
+                    reader.onerror = function (e) {
+                        console.error("Ошибка чтения файла", e);
+                    };
+
+                    reader.readAsDataURL(file);
                 } else {
-                    alert('❌ Ошибка при обновлении фото.');
+                    console.warn("Выбранный файл не является изображением");
                 }
-                document.getElementById('photo-form-container').style.display = 'none';
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('⚠️ Произошла ошибка при загрузке фото.');
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const editBtn = document.getElementById('update-user-info-btn');
+            const editForm = document.getElementById('edit-user-form');
+
+            editBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                editForm.style.display = 'block';
+                editBtn.innerHTML = '<i class="fas fa-save"></i>';
+            });
+
+            document.querySelector('.cancel-edit').addEventListener('click', function () {
+                editForm.style.display = 'none';
+                editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/></svg>';
+            });
+        });
+
     </script>
 {% endblock %}
