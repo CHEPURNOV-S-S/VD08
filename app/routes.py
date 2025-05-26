@@ -1,7 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_user, logout_user, current_user, login_required
+from werkzeug.utils import secure_filename
+
+from app import models, forms, bcrypt, db
+from app.models import User
+from app.forms import RegistrationForm, LoginForm
+
 from flask import current_app as app
 import os
-from werkzeug.utils import secure_filename
 
 # Данные для шаблона about.html
 team_members = [
@@ -36,7 +42,7 @@ def register_routes(app):
     @app.route("/")
     def home():
         greeting = "Hello, visitor!"
-        return render_template("home.html", greeting=greeting)
+        return render_template("home.html", current_user = current_user)
 
     @app.route("/about")
     def about():
@@ -97,3 +103,44 @@ def register_routes(app):
 
         return jsonify({'success': False, 'message': 'Недопустимый формат файла'}), 400
 
+    @app.route('/register', methods=['GET', 'POST'])
+    def register():
+        if current_user.is_authenticated:
+            return redirect(url_for('home'))
+        form = RegistrationForm()
+        if form.validate_on_submit():
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            flash('Вы успешно зарегистрировались', 'success')
+            return redirect(url_for('login'))
+        return render_template('register.html', form=form)
+
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        print('Отправка формы')
+        if current_user.is_authenticated:
+            print('user залогинен')
+            return redirect(url_for('home'))
+        form = LoginForm()
+        if form.validate_on_submit():
+            user = User.query.filter_by(email=form.email.data).first()
+            if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember.data)
+                print("Успешный логин")
+                return redirect(url_for('home'))
+            else:
+                print('Введены неверные данные', 'danger')
+                flash('Введены неверные данные', 'danger')
+        return render_template('login.html', form=form)
+
+    @app.route('/logout')
+    def logout():
+        logout_user()
+        return redirect(url_for('home'))
+
+    @app.route('/account')
+    @login_required
+    def account():
+        return render_template('account.html')
