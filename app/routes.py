@@ -4,33 +4,11 @@ from werkzeug.utils import secure_filename
 
 from app import models, forms, bcrypt, db
 from app.models import User
-from app.forms import RegistrationForm, LoginForm
+from app.forms import RegistrationForm, LoginForm, UpdateProfileForm
 
 from flask import current_app as app
 import os
 
-# Данные для шаблона about.html
-team_members = [
-    {"name": "Simon", "role": "Developer"},
-    {"name": "Semyon", "role": "Designer"},
-    {"name": "Simeon", "role": "Manager"}
-]
-
-# Данные для шаблона blog.html
-blog_posts = [
-    {"title": "Introduction to Python"},
-    {"title": "Flask Basics"},
-    {"title": "Web Development with Jinja"}
-]
-
-# Инициализация данных пользователя
-user_data = {
-    'name': 'Анна',
-    'city': 'Москва',
-    'hobby': 'Чтение книг',
-    'age': 25,
-    'photo': '/static/place_holder.jpg'  # Путь к дефолтной фотографии
-}
 
 def allowed_file(filename):
     if not filename or '.' not in filename:
@@ -52,34 +30,32 @@ def register_routes(app):
     def blog():
         return render_template("blog.html", blog_posts=blog_posts)
 
-    @app.route('/profile', methods=['GET'])
+    @app.route('/profile')
     def profile():
-        """Отображение профиля пользователя"""
-        return render_template('profile.html',
-                               user_name=user_data['name'],
-                               user_city=user_data['city'],
-                               user_hobby=user_data['hobby'],
-                               user_age=user_data['age'],
-                               user_photo=user_data['photo'])
+        if not current_user.is_authenticated:
+            return redirect(url_for('login'))
+        form = UpdateProfileForm(obj=current_user, current_user=current_user)
+        return render_template('profile.html', user=current_user, form = form)
 
     @app.route("/update-profile", methods=["POST"])
     def update_profile():
-        name = request.form.get("name")
-        city = request.form.get("city")
-        hobby = request.form.get("hobby")
-        age = request.form.get("age")
+        form = UpdateProfileForm(obj=current_user, current_user=current_user)
+        if form.validate_on_submit():
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            current_user.city = form.city.data
+            current_user.hobbies = form.hobbies.data
+            current_user.age = form.age.data
 
-        # Обновляем данные
-        print(f"{user_data}")
-        user_data.update({
-            "name": name,
-            "city": city,
-            "hobby": hobby,
-            "age": int(age) if age.isdigit() else user_data["age"]
-        })
-        print (f"{user_data}")
+            if form.password.data:
+                current_user.password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 
-        return redirect(url_for("profile"))
+            db.session.commit()
+            flash('Профиль успешно обновлён!', 'success')
+            return redirect(url_for('profile'))
+        else:
+            print("Ошибка подтверждения формы")
+            return render_template("profile.html", form=form, current_user=current_user, show_edit_form=True)
 
     @app.route('/update_photo', methods=['POST'])
     def update_photo():
@@ -91,14 +67,29 @@ def register_routes(app):
             return jsonify({'success': False, 'message': 'Нет выбранного файла'}), 400
 
         if file and allowed_file(file.filename):
+            # Полный путь к папке загрузок
+            upload_folder = app.config['UPLOAD_FOLDER']
+
+            # Если у пользователя уже есть своё фото (не стандартное)
+            old_photo = current_user.profile_picture
+            if old_photo and 'place_holder.jpg' not in old_photo:
+                old_photo_path = os.path.join(upload_folder, os.path.basename(old_photo))
+                if os.path.exists(old_photo_path):
+                    try:
+                        os.remove(old_photo_path)
+                    except Exception as e:
+                        print(f"Ошибка при удалении файла: {e}")
+                        return jsonify({'success': False, 'message': 'Не удалось удалить старое фото'}), 500
+
+            # Сохраняем новое фото
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(upload_folder, filename))
             photo_url = f"/static/uploads/{filename}"
-            print(f"{user_data}")
-            user_data.update({
-                "photo": photo_url,
-            })
-            print(f"{user_data}")
+            print(photo_url)
+            # Обновляем запись в БД
+            current_user.profile_picture = photo_url
+            db.session.commit()
+
             return jsonify({'success': True, 'photo_url': photo_url})
 
         return jsonify({'success': False, 'message': 'Недопустимый формат файла'}), 400
@@ -128,19 +119,14 @@ def register_routes(app):
             user = User.query.filter_by(email=form.email.data).first()
             if user and bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user, remember=form.remember.data)
-                print("Успешный логин")
+                print("успешный логин")
                 return redirect(url_for('home'))
             else:
                 print('Введены неверные данные', 'danger')
-                flash('Введены неверные данные', 'danger')
+                form.password.errors.append("Неверный логин или пароль")
         return render_template('login.html', form=form)
 
     @app.route('/logout')
     def logout():
         logout_user()
         return redirect(url_for('home'))
-
-    @app.route('/account')
-    @login_required
-    def account():
-        return render_template('account.html')

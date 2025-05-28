@@ -3,7 +3,7 @@
 {% block title %}Вход{% endblock %}
 {% block content %}
     <h1>Вход</h1>
-    <form method="POST" action="{{ url_for('login') }}">
+    <form method="POST" action="{{ url_for('login') }}" novalidate>
         {{ form.hidden_tag() }}
          <!-- Поле Email -->
         <div class="mb-3">
