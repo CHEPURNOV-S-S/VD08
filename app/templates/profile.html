@@ -13,7 +13,8 @@
             <div class="col-md-4 position-relative" style="width: fit-content;">
                  <!-- Фото пользователя -->
                 <div class="photo-container position-relative">
-                    <img src="{{ user_photo }}" alt="Фото пользователя" id="user-photo" class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
+                    <img src="{{ current_user.profile_picture or url_for('static', filename='place_holder.jpg')}}"
+                         alt="Фото пользователя" id="user-photo" class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
 
                     <!-- Кнопка "Обновить фото" -->
                     <a href="#" id="update-photo-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить фото">
@@ -32,10 +33,10 @@
 
                     <!-- Блок с отображаемой информацией -->
                     <div id="user-info-display">
-                        <h2>{{ user_name }}</h2>
-                        <p><strong>Город:</strong> {{ user_city }}</p>
-                        <p><strong>Хобби:</strong> {{ user_hobby }}</p>
-                        <p><strong>Возраст:</strong> {{ user_age }}</p>
+                        <h2>{{ current_user.username }}</h2>
+                        <p><strong>Город:</strong> {{ current_user.city }}</p>
+                        <p><strong>Хобби:</strong> {{ current_user.hobbies }}</p>
+                        <p><strong>Возраст:</strong> {{ current_user.age }}</p>
 
                         <!-- Кнопка "Изменить данные" -->
                         <a href="#" id="update-user-info-btn" class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" title="Изменить данные">
@@ -46,34 +47,73 @@
                     </div>
 
                     <!-- Скрытая форма для редактирования -->
-                    <form id="edit-user-form" class="mt-3" style="display: none;" action="{{ url_for('update_profile') }}" method="POST">
+                    <form id="edit-user-form" class="mt-3" autocomplete="off" action="{{ url_for('update_profile') }}"
+                          method="POST" novalidate
+                          style="display: {% if show_edit_form %}block{% else %}none{% endif %};">
+                        {{ form.hidden_tag() }}
 
-                        <div class="mb-2">
-                            <label for="edit-name" class="form-label">Имя</label>
-                            <input type="text" class="form-control" id="edit-name" name="name" value="{{ user_name }}">
+                        <div class="mb-3">
+                            {{ form.username.label }}
+                            {{ form.username(class="form-control") }}
+                            {% for error in form.username.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
                         </div>
 
-                        <div class="mb-2">
-                            <label for="edit-city" class="form-label">Город</label>
-                            <input type="text" class="form-control" id="edit-city" name="city" value="{{ user_city }}">
+                        <div class="mb-3">
+                            {{ form.email.label }}
+                            {{ form.email(class="form-control") }}
+                            {% for error in form.email.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
                         </div>
 
-                        <div class="mb-2">
-                            <label for="edit-hobby" class="form-label">Хобби</label>
-                            <input type="text" class="form-control" id="edit-hobby" name="hobby" value="{{ user_hobby }}">
+                        <div class="mb-3">
+                            {{ form.city.label }}
+                            {{ form.city(class="form-control") }}
+                            {% for error in form.city.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
                         </div>
 
-                        <div class="mb-2">
-                            <label for="edit-age" class="form-label">Возраст</label>
-                            <input type="number" class="form-control" id="edit-age" name="age" value="{{ user_age }}">
+                        <div class="mb-3">
+                            {{ form.hobbies.label }}
+                            {{ form.hobbies(class="form-control", rows=3) }}
+                            {% for error in form.hobbies.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
                         </div>
 
-                        <button type="submit" class="btn btn-success btn-sm me-2">
-                            <i class="fas fa-save"></i> Сохранить
-                        </button>
+                        <div class="mb-3">
+                            {{ form.age.label }}
+                            {{ form.age(class="form-control") }}
+                            {% for error in form.age.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.password.label }}
+                            {{ form.password(class="form-control",  autocomplete="new-password") }}
+                            {% for error in form.password.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.confirm_password.label }}
+                            {{ form.confirm_password(class="form-control", autocomplete="new-password") }}
+                            {% for error in form.confirm_password.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        {{ form.submit(class="btn btn-primary") }}
+
                         <button type="button" class="btn btn-secondary btn-sm cancel-edit">
                             <i class="fas fa-times"></i> Отмена
                         </button>
+
                     </form>
                 </div>
             </div>
@@ -175,9 +215,6 @@
 
             if (form) {
                 form.addEventListener('submit', function () {
-                    setTimeout(() => {
-                        viewMode();
-                    }, 100); // Небольшая задержка для обновления текста
                 });
             }
         });
