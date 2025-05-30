@@ -1,3 +1,5 @@
+import os
+
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
@@ -7,7 +9,8 @@ from app.models import User
 from app.forms import RegistrationForm, LoginForm, UpdateProfileForm
 
 from flask import current_app as app
-import os
+
+from app.services.qoute_service import get_random_quote
 
 
 def allowed_file(filename):
@@ -19,8 +22,16 @@ def allowed_file(filename):
 def register_routes(app):
     @app.route("/")
     def home():
-        greeting = "Hello, visitor!"
-        return render_template("home.html", current_user = current_user)
+        quote = get_random_quote()
+        print(quote)  # Печать данных для отладки
+        if current_user.is_authenticated:
+            greeting = f"Hello, {current_user.username}!"
+        else:
+            greeting = "Hello, visitor!"
+        return render_template("home.html",
+                               current_user = current_user,
+                               greeting = greeting,
+                               quote = quote[0])
 
     @app.route("/about")
     def about():
