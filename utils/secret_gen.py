@@ -6,3 +6,7 @@ def generate_secret():
     key = secrets.token_urlsafe(32)
     print(f"\nSECRET_KEY={key}\n")
     print("Добавьте эту строку в ваш .env файл.")
+
+
+if __name__ == "__main__":
+    generate_secret()
