@@ -1,6 +1,5 @@
 __pycache__/
 /.idea/
-/config.py
 /instance/
 /migrations/*
 /app/static/uploads/
