@@ -2,18 +2,19 @@
 import os
 from dotenv import load_dotenv
 
+# Загружаем .env в первую очередь
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '.env'))
+dotenv_path = os.path.join(basedir,'..', '.env')
+print(f"Start load_dotenv Path to .env {dotenv_path}")
+result = load_dotenv(dotenv_path)
+print(f"Load result: {result}")
 
-load_dotenv()
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_migrate import Migrate
-
-
 
 from config import Config
 
@@ -25,7 +26,6 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-
     for var in app.config['REQUIRED_VARS']:
         if not app.config.get(var):
             raise ValueError(f"Не задана переменная окружения: {var}")
