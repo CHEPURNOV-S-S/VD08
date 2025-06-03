@@ -28,6 +28,15 @@ nano ./.env
 
 Для Windows (PowerShell):
 ```Powershell
+# Создаём файл с шаблоном
+@'
+SECRET_KEY=your_secret_key_here
+DATABASE_URL=sqlite:///site.db
+API_NINJAS_KEY=your_api_key_here
+DEBUG=1
+'@ | Set-Content -Path .\.env -Encoding UTF8
+
+# Редактируем файлю
 notepad .\.env
 ```
 
