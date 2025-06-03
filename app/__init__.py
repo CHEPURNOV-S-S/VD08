@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 basedir = os.path.abspath(os.path.dirname(__file__))
 dotenv_path = os.path.join(basedir,'..', '.env')
 print(f"Start load_dotenv Path to .env {dotenv_path}")
-result = load_dotenv(dotenv_path)
+result = load_dotenv(dotenv_path, encoding='utf-8-sig')
 print(f"Load result: {result}")
 
 
