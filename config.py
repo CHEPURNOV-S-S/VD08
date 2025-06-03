@@ -8,6 +8,8 @@ class Config:
 
     UPLOAD_FOLDER = 'app/static/uploads'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    MAX_FILE_SIZE = 20*1024*1024 #20 MБ
+    MIN_FREE_SPACE = 40*1024*1024 #40 MБ
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

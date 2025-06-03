@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
@@ -46,6 +47,13 @@ def register_routes(app):
         if not current_user.is_authenticated:
             return redirect(url_for('login'))
         form = UpdateProfileForm(obj=current_user, current_user=current_user)
+
+        # Получаем путь к фото профиля
+        photo_url = current_user.profile_picture
+        full_path = os.path.join(app.config['UPLOAD_FOLDER'], os.path.basename(photo_url or ''))
+        if not os.path.exists(full_path):
+            current_user.profile_picture = None
+
         return render_template('profile.html', user=current_user, form = form)
 
     @app.route("/update-profile", methods=["POST"])
@@ -77,9 +85,29 @@ def register_routes(app):
         if file.filename == '':
             return jsonify({'success': False, 'message': 'Нет выбранного файла'}), 400
 
-        if file and allowed_file(file.filename):
+        if not allowed_file(file.filename):
+            return jsonify({'success': False, 'message': 'Недопустимый формат файла'}), 400
+
+
+
+        try:
             # Полный путь к папке загрузок
             upload_folder = app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)  # Создаём папку, если её нет
+
+            # Проверка размера файла
+            file.seek(0, os.SEEK_END)
+            file_size = file.tell()
+            file.seek(0)
+
+            if file_size > app.config['MAX_FILE_SIZE']:
+                return jsonify({'success': False, 'message': 'Файл слишком большой'}), 413
+
+            # Проверяем свободное место
+            total, used, free = shutil.disk_usage(upload_folder)
+            if free < app.config['MIN_FREE_SPACE']:
+                return jsonify({'success': False,
+                                'message': 'Недостаточно свободного места на сервере'}), 507  # HTTP 507 Insufficient Storage
 
             # Если у пользователя уже есть своё фото (не стандартное)
             old_photo = current_user.profile_picture
@@ -103,7 +131,11 @@ def register_routes(app):
 
             return jsonify({'success': True, 'photo_url': photo_url})
 
-        return jsonify({'success': False, 'message': 'Недопустимый формат файла'}), 400
+        except Exception as e:
+            logging.error(f"Ошибка при загрузке фото: {e}")
+            db.session.rollback()
+            return jsonify({'success': False, 'message': 'Произошла внутренняя ошибка сервера'}), 500
+
 
     @app.route('/register', methods=['GET', 'POST'])
     def register():
