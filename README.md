@@ -40,7 +40,7 @@ DEBUG=1
 notepad .\.env
 ```
 
-Добавьте следующее содержимое в файл .env:
+Добавьте следующее содержимое в файл .env
 
 ```bash
 SECRET_KEY=your_secret_key
@@ -164,7 +164,7 @@ sudo nano /etc/systemd/system/flaskapp.env
 ```
 
 Добавьте следующее содержимое:
-
+!ВАЖНО: БЕЗ ПРОБЕЛОВ И КАВЫЧЕК!
 ```bash
 SECRET_KEY=ваш_сгенерированный_ключ
 DATABASE_URL=sqlite:///site.db
@@ -213,8 +213,8 @@ WantedBy=multi-user.target
 ```bash
 sudo systemctl start flask-db-init.service
 # Проверьте что база данных была создана
-sudo systemctl status flaskapp-db-init.service
-# должно быть сообщение "База данных успешно создана"
+sudo systemctl status flask-db-init.service
+# В статусе должно быть сообщение "База данных успешно создана"
 ```
 
 ---
@@ -276,11 +276,11 @@ sudo nano /etc/nginx/sites-available/flaskapp
 ```
 
 Вставьте:
-
+!ВАЖНО: не забудьте указать домен или ip адрес сервера вместо "your_server_domain or your_sever_ip"!
 ```nginx
 server {
     listen 80;
-    server_name 82.202.141.247;
+    server_name your_server_domain or your_sever_ip;
 
     proxy_headers_hash_max_size 512;
     proxy_headers_hash_bucket_size 128;
@@ -335,7 +335,7 @@ http://server_ip
 - Не забудьте заменить `ваш_домен_или_IP` на реальный домен или IP-адрес сервера.
 - Если вы используете API от [API-Ninjas](https://api-ninjas.com),  укажите свой ключ в `API_NINJAS_KEY`.
 - Количество воркеров в Gunicorn можно изменять в зависимости от числа ядер процессора.
-- Вся инструкция проверена для бесплатного сервера на "cloud.ru" на Ubuntu 22.04
+- Все шаги инструкции были проверены на бесплатном VPS-сервере с установленной Ubuntu 22.04 на платформе "cloud.ru"
 
 ---
 
